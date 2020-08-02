@@ -1,0 +1,41 @@
+(function (w,$) {
+    // 設定jQuery全域變數
+    "use strict";
+    if (!w.console) w.console = {};
+    if (!w.console.log) s.console.log = function () {};
+    w.Global = {
+        // proc_mode 1: 本地連結模式，連結local ajax - json
+        // proc_mode 2: 遠端連結模式，連結遠端 ajax - jsonp 
+        // proc_mode 3: 本地測試模式，讀取本地檔案
+        proc_mode: 1,
+        base_url: "",
+        prefix: "lenapi",
+        default_params: "",
+        event:{
+            "GetSignSum":"signsum.php",
+            "GetDeclare":"declare.php",
+            "FormAction":"formaction.php",
+            "GetSignMap":"signmap.php",
+            "GetVideo":"video.php",
+            "GetEvent":"event.php",
+            "GetImage":"image.php",
+            "GetStory":"story.php",
+            "GetIndex":"index.php",
+            "GetAbout":"about.php",
+            "GetQuote":"quote.php",
+            "GetResource":"resource.php",
+            "GetLawList":"tax.php",
+            "GetNewsList":"newslist.php"
+        }
+    };
+    if (w.Global.proc_mode == 1) {
+        w.Global.base_url = "";
+        w.Global.prefix = "lenapi";
+    } else if (w.Global.proc_mode == 2) {
+        w.Global.base_url = "http://remote.server.com";
+        w.Global.prefix = "lenapi";
+    } else if (w.Global.proc_mode == 3) {
+        w.Global.base_url = "";
+        w.Global.prefix = "lendata";
+    }  ; 
+})(window, jQuery);

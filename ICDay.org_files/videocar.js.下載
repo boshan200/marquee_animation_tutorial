@@ -1,0 +1,316 @@
+(function() {
+    initweblink = function (typecode,typename, id,pagenum,pagesize) {
+		// initial the first data;
+		var data = {
+		  "action": "video"
+		};
+		lenajax.post({
+		  event: "GetIndex",
+		  data: data,
+		  errorFunc: function (request, error) {
+			  console.log(arguments);
+			  console.log("init video Can't do because: " + error);
+		  },
+		  okFunc: function(result) {
+			var rtn = JSON.parse(result);
+
+        //var doaction='active ';
+        //append to current data;
+			$("#videoIndex").empty();
+			$('#videoList').empty();
+
+			var pagecount = Math.ceil (rtn.length/pagesize);
+			setlist(rtn,pagecount,pagesize,function(data){
+					//console.log("line 25:"+data.length);
+				var datavar="";	
+				for (var key in data) {
+					//console.log('line27: key:'+key+':'+data[key]);
+					datavar += data[key];
+				}	
+				$('#videoList').append(datavar);				
+			});
+			/*
+			var prevpage , nextpage, prevclass,nextclass;
+			if (pagenum>1) {
+				prevpage=pagenum-1;
+				prevclass = '' ;
+			} else {
+				prevpage=1;
+				prevclass = ' class="disabled"' ;
+			}
+			if (pagenum<pagecount) {
+				nextpage = pagenum+1;
+				nextclass='';
+			} else {
+				nextpage=pagecount;
+				nextclass=' class="disabled"';
+			}
+			*/
+			var activeclass="";
+			for (i=1;i<=pagecount;i++) {
+				if (i==1) {
+					activeclass= ' class="active"';
+				} else {
+					activeclass ='';
+				}
+				$('#videoIndex').append('<li data-target="#blogCarousel" data-slide-to="'+(i-1)+'"'+activeclass+'></li>');
+				//console.log('line 74: <li data-target="#blogCarousel" data-slide-to="'+i+'"'+activeclass+'></li>');
+			};
+		  }
+		});
+		return false;
+    };
+    setlist = function (dataset,pagecount,pagesize,callback){
+			var urlcount = 1;
+			var loop_i=0;
+			var datalist=[];
+			var activeclass="";
+			var modaldata="";
+			
+			for (i=1;i<=pagecount;i++) {
+				if (i==1) {
+					activeclass= ' class="carousel-item active"';
+				} else {
+					activeclass =' class="carousel-item"';
+				}
+				loop_i=0;
+				for (j=((i-1)*pagesize);j<(i*pagesize);j++) {
+					var videodata = dataset[j];
+					loop_i++;
+					//console.log(i+':'+j+':'+(((i-1)*2)+j+1));
+					//console.log(videodata.vd_publish_date);
+//					if (typeof videodata.vd_publish_date != 'undefined') 
+				    if (j < dataset.length) {
+						videodata.vd_publish_date = moment(videodata.vd_publish_date).format('DD MMMM, YYYY');
+						videodata.vd_content=truncateString(deletehtmltag(videodata.vd_content),108);
+
+						if (loop_i==1) datalist[((i-1)*2)+j]='<div'+activeclass+'><div class="row">';
+					
+						if (videodata.videourl != null && videodata.videourl != '') {
+							var videoVar='<div class="col-md-6  d-flex align-items-stretch"><div class="card shadow-sm">';
+							videoVar=videoVar+'<div class="card-img">';
+							videoVar=videoVar+'<img class="card-img-top img-fluid open-vdDialog" style="cursor: pointer" ';
+							videoVar=videoVar+'src="'+videodata.vd_imgurl+'" ';
+							videoVar=videoVar+'data-toggle="modal" data-target="#videoModal'+j+'">';
+							videoVar=videoVar+'<span class="bg-info">VIDEO</span>';
+							videoVar=videoVar+'</div>';
+							videoVar=videoVar
+								+'<div class="card-body"> <span class="badge badge-pill badge-primary">'+videodata.vd_publish_date+'</span>'
+									+'<h5 class="card-title">'+videodata.title+'</h5>'
+									+'<p class="card-text">'+videodata.vd_content+'</p>'
+								+'</div>'
+							+'</div></div>';
+
+							// start to buld the modal conntent 
+							modaldata = modaldata+'<div class="modal fade" id="videoModal'+j+'" tabindex="-1" role="dialog" aria-labelledby="imgModalLabel" aria-hidden="true">';
+							modaldata = modaldata+'<div class="modal-dialog" role="document">';
+							modaldata = modaldata+'<div class="modal-content">';
+							modaldata = modaldata+'<div class="modal-body">';
+							modaldata = modaldata+'<div>';
+							if (isFacebookUrl(videodata.videourl)) {
+								if (videodata.vd_category == 'fbm') {
+									modaldata=modaldata+'<div class="text-center">'+videodata.vd_videohtml+'</div>';
+								} else {
+									modaldata=modaldata+'<div class="embed-responsive embed-responsive-16by9">';
+									modaldata=modaldata+'<iframe src="'+videodata.videourl+'" frameborder="0" allowfullscreen></iframe>';
+									modaldata=modaldata+'</div>';
+								}
+							} else {
+								modaldata=modaldata+'<div class="embed-responsive embed-responsive-16by9">';
+								if (isYouTubeUrl(videodata.videourl)) {
+								//	console.log('Youtube Video');
+									modaldata=modaldata+'<iframe src="'+videodata.videourl+'" frameborder="0" allowfullscreen></iframe>';
+								}
+								else if (isVimeoUrl(videodata.videourl)) {
+									//console.log('Vimeo Video');
+									modaldata=modaldata+'<iframe src="'+videodata.videourl+'" frameborder="0" allowfullscreen></iframe>';
+								}
+								else if (isTwitterUrl(videodata.videourl)) {
+									//console.log('twitter Video');
+									modaldata=modaldata+'<iframe src="'+videodata.videourl+'" frameborder="0" allowfullscreen></iframe>';
+									//videoVar=videoVar+'<video controls class="embed-responsive-item" src="'+videodata.videourl+'"></video>';
+								}
+								else {
+									//console.log('not Youtube/Facebook Video');
+					//				videoVar=videoVar+'<iframe src="'+videodata.videourl+'" "frameborder="0" allowfullscreen></iframe>';
+									modaldata=modaldata+'<video controls class="embed-responsive-item"';
+									//if (videodata.vd_imgurl != '') {
+									//	modaldata=modaldata+'poster="'+videodata.vd_imgurl+'"';
+									//}
+									modaldata=modaldata+'src="'+videodata.videourl+'"></video>';
+								}
+								modaldata=modaldata+'</div>';
+							}
+							
+							//+videodata.vd_videohtml;
+							modaldata = modaldata+'</div>';
+							modaldata = modaldata+'<div class="card-body">'
+										+'<span class="badge badge-pill badge-primary">'+videodata.vd_publish_date+'</span>'
+										+'<h5 class="card-title">'+videodata.title+'</h5>'
+										+'<p class="card-text">'+videodata.vd_content+'</p>'
+										+'</div></div>';
+
+							modaldata = modaldata+'<div class="modal-footer">';
+							modaldata = modaldata+'<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>';
+							modaldata = modaldata+'</div>';
+							modaldata = modaldata+'</div>';
+							modaldata = modaldata+'</div>';
+							modaldata = modaldata+'</div>';
+						} else {
+							var videoVar=videodata.vd_videohtml
+						}
+						
+					    datalist[((i-1)*2)+j+1]= videoVar;
+				    }
+				    if (loop_i==pagesize) datalist[((i-1)*2)+j+2]='</div></div>';
+					if (j===(dataset.length-1)) {
+						callback(datalist);
+					}
+				}
+			}
+			$('#videomodal').html( modaldata);
+
+    }
+    $(document).on("hidden.bs.modal",".modal", function (e) {
+	    //alert("close video modal, reset the video src to stop the play");
+		var memory = $(this).html();
+		$(this).html(memory);
+        //$iframe = $(this).find(".modal-body");
+        //$iframe.attr("src", $iframe.attr("src"));
+    });	
+    parseQueryString = function(queryString) {
+        var queries = queryString.split('&'),
+            result = {},
+            tokens,
+            length,
+            i;
+
+        for (i = 0, length = queries.length; i < length; i++) {
+            tokens = queries[i].split('=');
+            result[tokens[0]] = tokens[1];
+        }
+
+        return result;
+    };
+	function isYouTubeUrl(url) {
+		//var url = $('#youTubeUrl').val();
+        if (url != undefined || url != '') {
+            var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|\?v=)([^#\&\?]*).*/;
+            var match = url.match(regExp);
+            if (match && match[2].length == 11) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+		return false;
+	};
+	function isFacebookUrl(url) {
+		//var url = $('#youTubeUrl').val();
+        if (url != undefined || url != '') {
+			regexp = /^https:\/\/www\.facebook\.com\/([^\/?].+\/)?video(s|\.php)[\/?].*$/gm;
+			//console.log("0."+url.match($fbUrlCheck));
+			//console.log("1."+url.match($fbUrlCheck));
+			//console.log("2."+url.match(regexp));
+			if(url.match(regexp)) {
+				return true;
+			} else {
+				 return false;
+			}			
+        }
+		return false;
+	};
+	
+	function isInstagramUrl(url) {
+        if (url != undefined || url != '') {
+			regexp = /^https:\/\/www\.instagram\.com\/p\/.{6,}\?/;
+			console.log("2."+url.match(regexp));
+			if(url.match(regexp)) {
+				return true;
+			} else {
+				 return false;
+			}			
+        }
+		return false;
+	
+	};
+	function isTwitterUrl(url) {
+		//https://twitter.com/i/videos/tweet/1240141444049973249?embed_source=clientlib&player_id=0&rpc_init=1&autoplay=1&language_code=en&use_syndication_guest_id=true
+        if (url != undefined || url != '') {
+			regexp = /http(?:s)?:\/\/(?:www\.)?twitter\.com\/([a-zA-Z0-9_]+)/;
+			//console.log("0."+url.match($fbUrlCheck));
+			//console.log("1."+url.match($fbUrlCheck));
+			//console.log("2."+url.match(regexp));
+			if(url.match(regexp)) {
+				return true;
+			} else {
+				 return false;
+			}			
+        }
+		return false;
+	};
+	function isVimeoUrl(url) {
+		//https://twitter.com/i/videos/tweet/1240141444049973249?embed_source=clientlib&player_id=0&rpc_init=1&autoplay=1&language_code=en&use_syndication_guest_id=true
+        if (url != undefined || url != '') {
+			regexp = /(?:www\.|player\.)?vimeo.com\/(?:channels\/(?:\w+\/)?|groups\/(?:[^\/]*)\/videos\/|album\/(?:\d+)\/video\/|video\/|)(\d+)(?:[a-zA-Z0-9_\-]+)?/i;
+			//console.log("2."+url.match(regexp));
+			if(url.match(regexp)) {
+				return true;
+			} else {
+				 return false;
+			}			
+        }
+		return false;
+	};	
+	function deletehtmltag(str){
+		str=str.replace(/(<([^>]+)>)/gi, "");
+		//retstr = str.replace(/\s*(<br ?\/>\s*)+/g, "<br />").replace(/^<br \/>|<br \/>$/g, "");
+		return str;
+	};
+	function truncateString(str, num) {
+	  if (str.length <= num) {
+		return str;
+	  }
+	  return str.slice(0, num) + ' ...more'
+	};
+	
+    params = parseQueryString(location.search.substr(1));
+    if (params['pagenum']==undefined) params['pagenum']=1;
+    if (params['pagesize']==undefined) params['pagesize']=2;
+    if (params['typename']==undefined) params['typename']='';
+    if (params['id']==undefined) params['id']="";
+    if (params['returntype']!=undefined) params['typecode'] = params['returntype'];
+	initweblink(params['typecode'],params['typename'], params['id'],params['pagenum'],params['pagesize']);
+	
+})();
+$(document).on("click", ".open-vdDialog", function () {
+	var imgsrc = $(this).attr('src');
+	var imgtitle = $(this).attr('alt');
+	//console.log('chagne image'+imgsrc);
+	
+	$videoSrc = $(this).data( "src" );
+	$('#imgpopup').attr('src',imgsrc);
+	$('#imgtext').text(imgtitle);
+});
+
+$(document).ready(function() {
+	var $videoSrc;  
+	$(document).on("click", ".open-vdDialog", function () {
+		$videoSrc = $(this).attr('data-src');
+		console.log($videoSrc);
+	});	
+	
+	$('#vdModal').on('shown.bs.modal', function (e) {
+		
+	// set the video src to autoplay and not to show related video. Youtube related video is like a box of chocolates... you never know what you're gonna get
+	$("#video").attr('src',$videoSrc + "?autoplay=1&amp;modestbranding=1&amp;showinfo=0" ); 
+	});
+
+	// stop playing the youtube video when I close the modal
+	$('#vdModal').on('hide.bs.modal', function (e) {
+		// a poor man's stop video
+		//$("#video").attr('src',$videoSrc); 
+		$("#video").attr('src',''); 
+	}) ;
+})

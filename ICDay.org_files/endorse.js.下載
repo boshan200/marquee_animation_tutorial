@@ -1,0 +1,56 @@
+var lenaction = {
+  summitendorse: function () {
+    // initial the first data;
+    var data = {
+      "action": "endorse",
+	  "first_name": $("#inputfirst").val(),
+	  "last_name": $("#inputlast").val(),
+	  "orga_name": $("#inputOrganization").val(),
+	  "select_nation": $("#inputNationality").val()
+    };
+	lenajax.post({
+	  event: "FormAction",
+	  data: data,
+	  errorFunc: function (request, error) {
+	      console.log(arguments);
+	      console.log("Endorse fail because: " + error);
+	  },
+	  okFunc: function(result) {
+		console.log("Endorse OK:"+result);
+	    var rtn = JSON.parse(result);
+        alert("Endorse successfully!");
+		$("#inputfirst").val("");
+		$("#inputlast").val("");
+		$("#inputOrganization").val("");
+		//$("#select").val("");
+      }
+    });
+    return false;
+  },
+  complete: function () {
+    alert('completed init');
+  }
+};
+$("document").ready(function(){
+  //lenaction.complete();
+});
+$("#ToEndorse").click(function(){
+	if ($("#inputfirst").val()=="") {
+		  alert('Please keyin the First Name');
+		  $("#inputfirst").focus();
+		  return false;
+	} 
+	if ($("#inputlast").val()=="") {
+		  alert('Please keyin the Last Name');
+		  $("#inputlast").focus();
+		  return false;
+	} 
+	if ($("#inputOrganization").val()=="") {
+		  alert('Please keyin the Orgnization');
+		  $("#inputOrganization").focus();
+		  return false;
+	} 
+	lenaction.summitendorse(function(e){
+	  alert('after initpeople');
+	});
+});

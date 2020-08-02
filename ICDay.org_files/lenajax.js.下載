@@ -1,0 +1,68 @@
+var lenajax = (function ($) {
+    "use strict";
+    // 設定jQuery公用涵式
+    var error_msg = {
+            "err0001":"unknow error"
+        },
+        default_params = {
+            is_jsonp: false,
+            use_cache: false
+        };
+        
+    var AjaxSend, post;
+    
+    AjaxSend = function (params) {
+        var url = Global.base_url + "/" + Global.prefix + "/" +Global.event[params.event];
+        var pdata = $.param(params.data);
+        //console.log("line19:"+url);
+        //console.log("line20:"+JSON.stringify(params));
+        var ajax_params = {
+            type: params.method,
+            url: url,
+            dataType: params.is_json ? "jsonp" : "json",
+            ContentType: params.is_json ? "jsonp" : "application/json",
+            data:  pdata,
+            cache: params.use_cache
+        };
+        if (params.is_json) {
+            ajax_params.jsonpCallback = "jsonp";
+        }
+        //console.log("line31:"+JSON.stringify(ajax_params));
+        return $.ajax(ajax_params)
+            .done( function (rtn_json) {
+            	console.log(params.event+" is success");
+            	//console.log("line33:"+JSON.stringify(rtn_json));
+                if (rtn_json["json"] != undefined && !rtn_json["json"]) {
+                	console.log('line38; reply format error!');
+                    var error_reason = rtn_json["FailReason"],
+                        err_msg;
+                    err_msg = error_msg["err0001"];    
+                    //Modal.alert(err_msg);
+                    return;
+                }
+                params.okFunc(rtn_json["json"]);
+            })
+            .fail( function (jqxhr, textStatus, errorThrown) {
+            	console.log("line45:Fail"+JSON.stringify(jqxhr)+":"+JSON.stringify(textStatus));
+            	params.errorFunc && params.errorFunc(false);
+            })
+            .statusCode({
+            	//console.log("line49:status");
+            })
+            .always(function () {
+            	//console.log("line51:always");
+            });
+    };
+    
+    post = function (params) {
+        params.data = params.data || {};
+        params.method = "POST";
+        
+        params =$.extend({},default_params, params);
+        return AjaxSend(params);
+    };
+    
+    return {
+        post: post
+    }
+})(jQuery);

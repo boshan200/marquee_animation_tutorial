@@ -1,0 +1,423 @@
+var lenactiond = {
+  inithomevideo: function () {	
+    // initial the first data;
+    var data = {
+      "action": "homevideo"
+    };
+	lenajax.post({
+	  event: "GetIndex",
+	  data: data,
+	  errorFunc: function (request, error) {
+	      console.log(arguments);
+	      console.log("init HOME Video Can't do because: " + error);
+	  },
+	  okFunc: function(result) {
+	    var rtn = JSON.parse(result);
+        var tdata = rtn[0];
+		//var videoitem =  '	<iframe width=\"560\" height=\"315\" src=\"'+tdata.btn_url+'?autoplay=1\"'
+		//				+' frameborder=\"0\" allow=\"accelerometer; autoplay;'
+		//				+' encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>';
+		var videoitem =  '<div>'
+						+'<a href=\"'+tdata.btn_url+'\" data-fancybox data-ratio="2">'
+						+'<i class="fa fa-play-circle fa-5x"></i><img src="'+tdata.btn_home_img+'" class="img-fluid" style="width:100%;">'
+						+'</a>'
+						+'</div>';
+			//console.log(videoitem);
+			
+			//    <div><a href="https://www.youtube.com/embed/DGyZPvAawFw" data-fancybox data-ratio="2"> <img src="images/hero_4.jpg" class="img-fluid"> </a></div>
+
+			$('#homevideo').html(videoitem);
+      }
+    });
+    return false;
+  },
+  initann: function () {	
+    // initial the first data;
+    var data = {
+      "action": "homeann"
+    };
+	lenajax.post({
+	  event: "GetIndex",
+	  data: data,
+	  errorFunc: function (request, error) {
+	      console.log(arguments);
+	      console.log("init HOME Video Can't do because: " + error);
+	  },
+	  okFunc: function(result) {
+	    var rtn = JSON.parse(result);
+		if (typeof rtn == "null")
+		{
+			$('#ann_container').hide();
+		} else {
+//			console.log('length:'+rtn.length+rtn[0]);
+			if (rtn.length > 0) {
+				var tdata = rtn[0];
+//			console.log('tdata:'+tdata.ans_desc);
+				if (tdata.ans_desc != "") {
+					$('#ann_title').html(tdata.ans_subj);
+					$('#ann_content').html(tdata.ans_desc);
+				} else {
+					$('#ann_title').html('');
+					$('#ann_content').html('');
+					$('#ann_statement').hide();
+				}
+				if (tdata.ans_img != "") {
+					$('#ann_image').attr('src',tdata.ans_img );
+				} else {
+					$('#ann_image').hide();
+				}
+			} else {
+				$('#ann_container').hide();
+			}
+		}
+      }
+    });
+    return false;
+  },
+  initvidelist: function () {	
+    var data = {
+      "action": "videolist"
+    };
+	lenajax.post({
+	  event: "GetIndex",
+	  data: data,
+	  errorFunc: function (request, error) {
+	      console.log(arguments);
+	      console.log("init Highlights Can't do because: " + error);
+	  },
+	  okFunc: function(result) {
+	    var rtn = JSON.parse(result);
+		var dataVar = new Array();
+        $("#video-list").empty();
+        for (i=0;i<rtn.length;i++) {
+        	//if (i==1) doaction = '';
+        	var tdata = rtn[i];
+            //console.log("highlights:"+i+tdata.btn_url+"-");
+			var listitem =  '<li class="col-md-2 col-sm-4 col-6">'
+				+'<a href="'+tdata.btn_url+'" data-fancybox data-ratio="2">'
+				+'<img src="'+tdata.btn_url_img+'" alt="'+tdata.btn_subj+'" class="img-fluid">'
+				+'<i class="fa fa-play-circle"></i>'
+				//+'<span class="duration">03:15</span>'
+				+'</a>'
+				+'</li>'; 
+			//console.log(caritem);
+            $("#video-list").append(listitem);
+        }
+      }
+    });
+    return false;
+  },
+  initcarousel: function () {	
+    // initial the first data;
+    var data = {
+      "action": "carousel"
+    };
+	lenajax.post({
+	  event: "GetIndex",
+	  data: data,
+	  errorFunc: function (request, error) {
+	      console.log(arguments);
+	      console.log("init Highlights Can't do because: " + error);
+	  },
+	  okFunc: function(result) {
+	    var rtn = JSON.parse(result);
+		var dataVar = new Array();
+        //var doaction='active ';
+        //append to current data;
+		//var car_list = rtn.data;
+		//var car_data = JSON.parse(car_list);
+		//console.log('empty carbtn_list');
+        //$("#carbtn_list").empty();
+		//console.log("carousel:"+result);
+		//console.log("carousels:"+rtn.length);
+		//console.log("carbtn_list",$("div.owl-stage-outer p").html());
+		//console.log("owl-carousel:",$(".owl-carousel").html());
+        for (i=0;i<rtn.length;i++) {
+        	//if (i==1) doaction = '';
+        	var tdata = rtn[i];
+            //console.log("highlights:"+i+tdata.btn_url+"-");
+/*
+            $innerhtml ='<a data-fancybox data-type="iframe" data-src="'+tdata.btn_url+'" data-ratio="2" href="javascript:;"';
+            $innerhtml+='<button type="button" class="btn btn-outline-primary active" style="font-size: 20px;font-weight: bold;">'+tdata.btn_subj+'</button>';
+            $innerhtml+=' </a>';
+			*/
+			var caritem =   '<div class="slider-item" style="background-image: url(\'images/hero_3.jpg\');">'
+								+'<div class="container">'
+								//+'<div><BR></div>'
+								+'<div><BR></div>'
+								+'<div><BR></div>'
+								+'<div><BR></div>'
+								+'<div><BR></div>'
+								+'<div><BR></div>'
+								+'<div><BR></div>'
+								+'<div><BR></div>'
+								  //+'<div class="row slider-text align-items-center justify-content-center">'
+								  //+'<div  style="vertical-align: middle;">'
+								    +'<div class="col-sm-12 slider-text text-center justify-content-center">'
+									  +'<h3 class="text-white"><span>Aprial 5<sup>TH</sup> 2020 </span></h3>'
+									  +'<h1 class="text-white"> <span>International Day of Conscience</span> </h1>'
+									  +'<h3 class="text-primary deepshd">Change the World with Conscience</h3>'
+									  +'<h5 class="text-default">The United Nations Declares April 5 as International Day of Conscience</h5>'
+									  +'<br>'
+									  +'<a data-fancybox data-type="iframe" data-src="'+tdata.btn_url+'&mute=0" data-ratio="2" href="javascript:;">'
+										+'<button type="button" class="btn btn-outline-primary active" style="font-size: 20px;">Watch Event Video</button>'
+									  +'</a>'
+									+'</div>'
+								  //+'</div>'
+								+'</div>'
+							+'</div>';
+			//console.log(caritem);
+			$('.owl-carousel').trigger('add.owl.carousel',[caritem]).trigger('refresh.owl.carousel');
+		    //dataVar.push(caritem);  
+        }
+      }
+    });
+    return false;
+  },
+  inithigh: function () {
+    // initial the first data;
+    var data = {
+      "action": "GetHighNews"
+    };
+	lenajax.post({
+	  event: "GetNewsList",
+	  data: data,
+	  errorFunc: function (request, error) {
+	      console.log(arguments);
+	      console.log("init Highlights Can't do because: " + error);
+	  },
+	  okFunc: function(result) {
+	    var rtn = JSON.parse(result);
+        //var doaction='active ';
+        //append to current data;
+		var news_list = rtn.data;
+		var news_data = JSON.parse(news_list);
+        $("#event_h_list").empty();
+		console.log("highlights:"+news_data.length);
+        for (i=0;i<news_data.length;i++) {
+        	//if (i==1) doaction = '';
+        	var tdata = news_data[i];
+			//tdata.title = decodeURIComponent(tdata.title);;
+            console.log("highlights:"+i+tdata.url+"-");
+            $innerhtml ='<div class="col-md-4 element-animate fadeInUp element-animated">';
+            $innerhtml+='<a href="singlepage.html?id='+tdata.url+'" class="link-thumbnail">';
+            $innerhtml+='<h3>'+tdata.title+'</h3>';
+            $innerhtml+='<span class="ion-plus icon"></span>';
+			$innerhtml+='<div style="width: 100%;height: 0;padding-bottom: 60%;  overflow: hidden;">';
+            $innerhtml+='<img src="'+tdata.image+'" alt="Image" class="img-fluid">';
+            $innerhtml+='</div>';
+            $innerhtml+='</a>';
+            $innerhtml+='</div>';
+            $("#event_h_list").append($innerhtml);
+        }
+			$("#event_h_list").show('slow');
+      }
+    });
+    return false;
+  },
+  initnews: function () {
+	  // initial the first data;
+	  var data = {
+	  	      "action": "news"
+	  };
+	  lenajax.post({
+	      event: "GetIndex",
+	      data: data,
+	      errorFunc: function (request, error) {
+	          console.log(arguments);
+	          console.log("init news Can't do because: " + error);
+	      },
+	      okFunc: function(result) {
+	    	var rtn = JSON.parse(result);
+			var list_data = JSON.parse(result);
+	        var doaction=' active';
+	        //append to current data;
+	        $("#news-list").empty();
+	        $newshtml="";
+	        $block_seq=0;
+			var newsone = rtn[0];
+			var newsurl = "singlepage.html?id="+newsone.url;
+			//newsone.title = decodeURIComponent(newsone.title);
+			//newsone.abstract = decodeURIComponent(newsone.abstract);
+			//console.log('hotnews-'+list_data.length)
+			/*
+			//console.log(newsone.abstract);
+            $newshtml+='<div class="embed-responsive embed-responsive-16by9">';
+			if (isYouTubeUrl(newsone.news_videourl)) {
+				console.log('Youtube Video');
+				$newshtml+='<iframe src="'+newsone.news_videourl+'" "frameborder="0" allowfullscreen></iframe>';
+			}
+			else {
+				console.log('not Youtube Video');
+				$newshtml+='<video controls class="embed-responsive-item" src="'+newsone.news_videourl+'"></video>';
+			}
+            //$newshtml+='<video controls class="embed-responsive-item" src="'+newsone.news_videourl+'"></video>';
+            $newshtml+='</div>';
+            $newshtml+='<div class="card-body">';
+            $newshtml+='<h5 class="card-title">'+newsone.title+'</h5>';
+            $newshtml+='<p>'+newsone.abstract+'</p>';
+            $newshtml+='<a href="'+newsurl+'">';
+            $newshtml+='<button type="button" class="btn btn-primary btn-sm">View details »</button>';
+            $newshtml+='</a> </div>';
+            */
+			for (var i=0;i<list_data.length;i++) {
+				//console.log(list_data[i]);
+				datad = list_data[i];
+				if (i==1) {
+					itemstate=" active";
+				}
+				else 
+				{
+					itemstate="";
+				}
+				
+				//newsurl = "singlepage.html?id="+datad.url+'&typecode='+datad.typecode+'&typename='+datad.typename;
+				newsurl = "singlepage.html?id="+datad.url;
+				//datad.title = decodeURIComponent(datad.title);;
+				//datad.abstract = decodeURIComponent(datad.abstract);;
+				var dataVar='<div class="carousel-item'+itemstate+'"><div class="card">'
+				+'<div class="card-img" style="width: 100%;height: 0;padding-bottom: 60%;  overflow: hidden;">'
+				+'<img src="'+datad.image+'" class="card-img-top" alt="...">'
+				+'</div>'
+				+'<div class="card-body">'
+                +'<h5 class="card-title">'+datad.title+'</h5>'
+				+'<p class="card-text">'+datad.abstract+ '</p>'
+				+'<a href="'+newsurl+'">'
+				+'<button type="button" class="btn btn-primary btn-sm">View details »</button>'
+				+'</a> </div>'
+				+'</div></div>';
+				//$('#breaknews-list').append(dataVar);
+				$("#news-list").append(dataVar);
+				//console.log(dataVar);
+			}
+	      }
+	    });
+	    return false;
+	  },
+  initresource: function () {
+	    // initial the first data;
+	  var data = {
+	  	      "action": "resource"
+	  	    };
+	  lenajax.post({
+	      event: "GetIndex",
+	      data: data,
+	      errorFunc: function (request, error) {
+	          console.log(arguments);
+	          alert("initinner Can't do because: " + error);
+	      },
+	      okFunc: function(result) {
+	    	var rtn = JSON.parse(result);
+	        var doaction=' active';
+	        //append to current data;
+	        $("#resource-list").empty();
+	        //alert(JSON.stringify(rtn));
+	        for (i=0;i<rtn.length;i++) {
+	        	if (i==1) doaction = '';
+	        	var tdata = rtn[i];
+	            $peoplehtml ='<div class="card e1">';
+	            $peoplehtml+='<div class="embed-responsive embed-responsive-16by9">';
+	            $peoplehtml+='<video controls class="embed-responsive-item"';
+				if (tdata.vd_imgurl != '') {
+					$peoplehtml+='poster="'+tdata.vd_imgurl+'"';
+				}
+				$peoplehtml+='src="'+tdata.videourl+'"></video>';
+	            $peoplehtml+='</div></div>';
+	            $("#resource-list").append($peoplehtml);
+	        }
+	      }
+	    });
+	    return false;
+	  },
+  initstory: function () {
+	    // initial the first data;
+	var data = {
+		      "action": "story"
+	  	    };
+	lenajax.post({
+	      event: "GetIndex",
+	      data: data,
+	  errorFunc: function (request, error) {
+	          console.log(arguments);
+	          alert("initinner Can't do because: " + error);
+	  },
+	  okFunc: function(result) {
+	    var rtn = JSON.parse(result);
+        var storydoaction=' active';
+        //append to current data;
+        $("#story-block").empty();
+        //alert(JSON.stringify(rtn));
+        for (i=0;i<rtn.length;i++) {
+        	if (i==1) storydoaction = '';
+        	var tdata = rtn[i];
+        	/*
+            alert(i+tdata.title+"-");
+        	 */
+            $storyhtml ='<div class="item'+storydoaction+'">';
+            $storyhtml+='<div class="caption row">';
+            $storyhtml+='<div class="col-md-7"><a href="#"><img src="'+tdata.image+'" class="img-responsive" alt="Responsive image"></a></div>';
+            $storyhtml+='<div class="col-md-5">';
+            $storyhtml+='<h3><small>【' + tdata.fromtype +'】</small><br>'+tdata.title+'</h3>';
+            $storyhtml+='<small class="text-danger">'+ tdata.author+'／'+ tdata.newsfrom + ' ' + tdata.news_time +'</small>';
+            $storyhtml+='<h4><a href="#">'+tdata.title+'</a></h4>';
+            $storyhtml+='<p>'+tdata.content+'</p>';
+            $storyhtml+='</div></div></div>';
+            $("#story-block").append($storyhtml);
+        }
+        var navstr='<div class="control-box"> <a data-slide="prev" href="#myCarousel_1" class="carousel-control left">‹</a> <a data-slide="next" href="#myCarousel_1" class="carousel-control right">›</a> </div>';
+        $("#story-block").append(navstr);
+      }
+    });
+    return false;
+  },
+  complete: function () {
+    alert('completed init');
+  }
+};
+$("document").ready(function(){
+  lenactiond.inithomevideo(function(e){
+      alert('after init inithomevidel');
+  });
+  lenactiond.initvidelist(function(e){
+      alert('after init video list');
+  });
+  lenactiond.initann(function(e){
+      alert('after init video list');
+  });
+	
+  //lenactiond.initcarousel(function(e){
+  //    alert('after init carousel');
+  //});
+  //lenactiond.inithigh(function(e){
+  //    alert('after init highlight');
+  //});
+  //lenactiond.initnews(function(e){
+      //alert('after init news');
+  //});
+  //lenactiond.initresource(function(e){
+      //alert('after initpeople');
+  //});
+  //lenaction.initstory(function(e){
+  //    alert('after initpeople');
+  //});
+  //lenaction.complete();
+});
+function isYouTubeUrl(url) {
+	//var url = $('#youTubeUrl').val();
+	if (url != undefined || url != '') {
+		var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|\?v=)([^#\&\?]*).*/;
+		var match = url.match(regExp);
+		if (match && match[2].length == 11) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	return false;
+};
+/*
+setTimeout(function() {
+    $('#indexslogan').fadeOut('slow');
+}, 3000);
+*/
