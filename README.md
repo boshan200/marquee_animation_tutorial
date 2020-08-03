@@ -12,6 +12,7 @@ HTML屬性說明:
 * scrollamount:控制動畫移動的速度 (1~100數字越大越快)
 * behavior:動畫的行為 (有scroll、alternate、slide三種)
 =======================================
+
 2. 再來將css語法放入HEAD裡頭即可完成操作
 
 EX: CSS 語法範例:
