@@ -34,6 +34,11 @@ css屬性說明:
 * color:字體顏色，使用16進位編碼來表示
 * background-color:背景顏色，表示方式同color
 * padding:圍繞字體的空白處
+* position:擺放節點的位置
+* bottom:該節點與父節點的底部的距離
+
+position屬性說明參照以下網址:
+https://zh-tw.learnlayout.com/position.html
 
 
 
